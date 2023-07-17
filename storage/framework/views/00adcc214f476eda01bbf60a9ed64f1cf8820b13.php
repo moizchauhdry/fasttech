@@ -1,15 +1,15 @@
-@extends('layouts.auth')
-@section('page-title')
-{{ __('Create Ticket') }}
-@endsection
-@push('css-page')
-<link rel="stylesheet" href="{{ asset('css/floating_chat.css') }}">
-@endpush
-@php
+<?php $__env->startSection('page-title'); ?>
+<?php echo e(__('Create Ticket')); ?>
+
+<?php $__env->stopSection(); ?>
+<?php $__env->startPush('css-page'); ?>
+<link rel="stylesheet" href="<?php echo e(asset('css/floating_chat.css')); ?>">
+<?php $__env->stopPush(); ?>
+<?php
 $logos=\App\Models\Utility::get_file('uploads/logo/');
 
-@endphp
-@section('content')
+?>
+<?php $__env->startSection('content'); ?>
 
 <div class="auth-wrapper auth-v1">
     <div style="background: #d70926 !important" class="bg-auth-side bg-primary"></div>
@@ -20,8 +20,8 @@ $logos=\App\Models\Utility::get_file('uploads/logo/');
             <div class="container-fluid pe-2">
                 <a class="navbar-brand" href="https://support.fasttechnologies.pk/">
 
-                    <img style="width:70%" src="{{ $logos.'logo-light.png' }}" alt="logo" />
-                    {{-- <img style="width:70%" src="{{ asset('assets/images/logo-white.png') }}" alt="logo" />--}}
+                    <img style="width:70%" src="<?php echo e($logos.'logo-light.png'); ?>" alt="logo" />
+                    
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false"
@@ -31,20 +31,20 @@ $logos=\App\Models\Utility::get_file('uploads/logo/');
                 <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
                     <ul class="navbar-nav align-items-center ms-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link bg-blac" href="{{ route('login') }}">{{ __('Agent Login') }}</a>
+                            <a class="nav-link bg-blac" href="<?php echo e(route('login')); ?>"><?php echo e(__('Agent Login')); ?></a>
                         </li>
                         <li class="nav-item">
-                            @if ($setting['FAQ'] == 'on')
-                            <a class="nav-link" href="{{ route('faq') }}">{{ __('FAQ') }}</a>
-                            @endif
+                            <?php if($setting['FAQ'] == 'on'): ?>
+                            <a class="nav-link" href="<?php echo e(route('faq')); ?>"><?php echo e(__('FAQ')); ?></a>
+                            <?php endif; ?>
                         </li>
                         <li class="nav-item">
-                            @if ($setting['Knowlwdge_Base'] == 'on')
-                            <a class="nav-link" href="{{route('knowledge')}}">{{ __('Knowledge') }}</a>
-                            @endif
+                            <?php if($setting['Knowlwdge_Base'] == 'on'): ?>
+                            <a class="nav-link" href="<?php echo e(route('knowledge')); ?>"><?php echo e(__('Knowledge')); ?></a>
+                            <?php endif; ?>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('search') }}">{{ __('Search Ticket') }}</a>
+                            <a class="nav-link" href="<?php echo e(route('search')); ?>"><?php echo e(__('Search Ticket')); ?></a>
                         </li>
                     </ul>
                 </div>
@@ -56,44 +56,54 @@ $logos=\App\Models\Utility::get_file('uploads/logo/');
                 <div class="mx-3 mx-md-5 mt-3">
 
                 </div>
-                @if (Session::has('create_ticket'))
+                <?php if(Session::has('create_ticket')): ?>
                 <div class="alert alert-success">
-                    <p>{!! session('create_ticket') !!}</p>
+                    <p><?php echo session('create_ticket'); ?></p>
                 </div>
-                @endif
+                <?php endif; ?>
                 <div class="card">
                     <div class="card-body w-100">
                         <div class="">
-                            <h4 style="color:#d70926 !important" class="text-primary mb-3">{{ __('Create Ticket') }}
+                            <h4 style="color:#d70926 !important" class="text-primary mb-3"><?php echo e(__('Create Ticket')); ?>
+
                             </h4>
                         </div>
-                        <form method="post" action="{{route('home.store')}}" class="create-form"
+                        <form method="post" action="<?php echo e(route('home.store')); ?>" class="create-form"
                             enctype="multipart/form-data">
-                            @csrf
+                            <?php echo csrf_field(); ?>
 
                             <div class="text-start row">
-                                @if (!$customFields->isEmpty())
-                                @include('admin.customFields.formBuilder')
-                                @endif
+                                <?php if(!$customFields->isEmpty()): ?>
+                                <?php echo $__env->make('admin.customFields.formBuilder', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+                                <?php endif; ?>
 
 
-                                @if (env('RECAPTCHA_MODULE') == 'yes')
+                                <?php if(env('RECAPTCHA_MODULE') == 'yes'): ?>
                                 <div class="form-group mb-3">
-                                    {!! NoCaptcha::display() !!}
-                                    @error('g-recaptcha-response')
+                                    <?php echo NoCaptcha::display(); ?>
+
+                                    <?php $__errorArgs = ['g-recaptcha-response'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                     <span class="small text-danger" role="alert">
-                                        <strong>{{ $message }}</strong>
+                                        <strong><?php echo e($message); ?></strong>
                                     </span>
-                                    @enderror
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 </div>
-                                @endif
+                                <?php endif; ?>
                                 <div class="text-center">
                                     <div class="d-block ">
                                         <input type="hidden" name="status" value="In Progress" />
                                         <button
                                             style="background-color:#d70926 !important; border-color: #d70926; !important"
                                             class="btn btn-primary btn-block mt-2">
-                                            {{ __('Create Ticket') }}
+                                            <?php echo e(__('Create Ticket')); ?>
+
                                         </button>
                                     </div>
                                 </div>
@@ -108,7 +118,7 @@ $logos=\App\Models\Utility::get_file('uploads/logo/');
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-6">
-                        <p class="text-muted">{{env('FOOTER_TEXT')}}</p>
+                        <p class="text-muted"><?php echo e(env('FOOTER_TEXT')); ?></p>
                     </div>
                     <div class="col-6 text-end">
 
@@ -122,23 +132,23 @@ $logos=\App\Models\Utility::get_file('uploads/logo/');
 
 <div class="row w-100 pb-2">
     <div class="col-sm-12 col-md-2 col-lg-2">
-        @if (Utility::getSettingValByName('CHAT_MODULE') == 'yes')
+        <?php if(Utility::getSettingValByName('CHAT_MODULE') == 'yes'): ?>
         <div class="fabs">
             <div class="chat d-none">
                 <div class="chat_header btn-primary dark_background_color">
                     <div class="chat_option">
                         <div class="header_img">
-                            <img src="{{ $logos.'logo-light.png' }}" />
+                            <img src="<?php echo e($logos.'logo-light.png'); ?>" />
                         </div>
-                        <span id="chat_head" class="">{{ __('Agent') }}</span>
+                        <span id="chat_head" class=""><?php echo e(__('Agent')); ?></span>
                     </div>
                 </div>
                 <div class="msg_chat">
                     <div id="chat_fullscreen" class="chat_conversion chat_converse">
-                        <h3 class="text-center mt-5 pt-5">{{ __('No Message Found.!') }}</h3>
+                        <h3 class="text-center mt-5 pt-5"><?php echo e(__('No Message Found.!')); ?></h3>
                     </div>
                     <div class="fab_field">
-                        <textarea id="chatSend" name="chat_message" placeholder="{{ __('Send a message') }}"
+                        <textarea id="chatSend" name="chat_message" placeholder="<?php echo e(__('Send a message')); ?>"
                             class="chat_field chat_message"></textarea>
                     </div>
                 </div>
@@ -152,7 +162,7 @@ $logos=\App\Models\Utility::get_file('uploads/logo/');
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                                             <input type="text" class="form-control" id="chat_email" name="name"
-                                                placeholder="{{ __('Enter You Email') }}" autofocus>
+                                                placeholder="<?php echo e(__('Enter You Email')); ?>" autofocus>
                                         </div>
                                     </div>
                                     <div class="invalid-feedback d-block e_error">
@@ -162,7 +172,7 @@ $logos=\App\Models\Utility::get_file('uploads/logo/');
                             <div class="form-group row mb-4 ml-md-2">
                                 <div class="col-sm-12 col-md-7">
                                     <button class="btn-submit btn btn-primary btn-block" id="chat_frm_submit"
-                                        type="button"><span>{{ __('Start Chat') }}</span></button>
+                                        type="button"><span><?php echo e(__('Start Chat')); ?></span></button>
                                 </div>
                             </div>
                         </form>
@@ -171,20 +181,21 @@ $logos=\App\Models\Utility::get_file('uploads/logo/');
             </div>
             <a id="prime" class="fab btn-primary"><i class="prime fas fa-envelope text-white"></i></a>
         </div>
-        @endif
+        <?php endif; ?>
     </div>
 
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
-@if (env('RECAPTCHA_MODULE') == 'yes')
-{!! NoCaptcha::renderJs() !!}
-@endif
+<?php $__env->startPush('scripts'); ?>
+<?php if(env('RECAPTCHA_MODULE') == 'yes'): ?>
+<?php echo NoCaptcha::renderJs(); ?>
+
+<?php endif; ?>
 
 <script src="//cdn.ckeditor.com/4.12.1/basic/ckeditor.js"></script>
-<script src="{{ asset('js/editorplaceholder.js') }}"></script>
+<script src="<?php echo e(asset('js/editorplaceholder.js')); ?>"></script>
 <script>
     $(document).ready(function() {
             $.each($('.ckdescription'), function(i, editor) {
@@ -200,7 +211,7 @@ $logos=\App\Models\Utility::get_file('uploads/logo/');
             $('.select2').select2({
                 "language": {
                     "noResults": function() {
-                        return "{{ __('No result found') }}";
+                        return "<?php echo e(__('No result found')); ?>";
                     }
                 },
             });
@@ -217,7 +228,7 @@ $logos=\App\Models\Utility::get_file('uploads/logo/');
             $('.' + $(this).attr('data-filename')).html(names);
         });
 </script>
-@if (APP\Models\Utility::getSettingValByName('CHAT_MODULE') == 'yes')
+<?php if(APP\Models\Utility::getSettingValByName('CHAT_MODULE') == 'yes'): ?>
 <script>
     var old_chat_user = getCookie('chat_user');
             $('#prime').click(function() {
@@ -274,9 +285,9 @@ $logos=\App\Models\Utility::get_file('uploads/logo/');
                 var email = $('#chat_email').val();
                 $.ajax({
                     type: 'POST',
-                    url: '{{ route('chat_form.store') }}',
+                    url: '<?php echo e(route('chat_form.store')); ?>',
                     data: {
-                        "_token": '{{ csrf_token() }}',
+                        "_token": '<?php echo e(csrf_token()); ?>',
                         email: email,
                     },
                     success: function(data) {
@@ -301,7 +312,7 @@ $logos=\App\Models\Utility::get_file('uploads/logo/');
                         type: "post",
                         url: "floating_message",
                         data: {
-                            "_token": '{{ csrf_token() }}',
+                            "_token": '<?php echo e(csrf_token()); ?>',
                             message: message,
                         },
                         cache: false,
@@ -325,7 +336,7 @@ $logos=\App\Models\Utility::get_file('uploads/logo/');
             function getMsg() {
                 $.ajax({
                     type: "get",
-                    url: "{{ route('get_message') }}",
+                    url: "<?php echo e(route('get_message')); ?>",
                     cache: false,
                     success: function(data) {
                         $('#chat_fullscreen').html(data);
@@ -339,8 +350,8 @@ $logos=\App\Models\Utility::get_file('uploads/logo/');
                 // Enable pusher logging - don't include this in production
                 Pusher.logToConsole = false;
 
-                var pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
-                    cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
+                var pusher = new Pusher('<?php echo e(env('PUSHER_APP_KEY')); ?>', {
+                    cluster: '<?php echo e(env('PUSHER_APP_CLUSTER')); ?>',
                     forceTLS: true
                 });
 
@@ -360,5 +371,6 @@ $logos=\App\Models\Utility::get_file('uploads/logo/');
 
             });
 </script>
-@endif
-@endpush
+<?php endif; ?>
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.auth', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\fasttech\resources\views/home.blade.php ENDPATH**/ ?>
