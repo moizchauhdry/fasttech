@@ -164,7 +164,7 @@ class HomeController extends Controller
 
         try {
             $this->sendMessageToCustomer($request->customField['7'], $ticket->ticket_id);
-            $this->sendMessageToAdmin('923204650584', $ticket->ticket_id);
+            $this->sendMessageToAdmin('923008489759', $ticket->ticket_id);
         } catch (\Throwable $th) {
             //throw $th;
         }
@@ -249,7 +249,7 @@ class HomeController extends Controller
         $api_key = '923244904912-eb509d03-4c92-4e7d-bc19-ff46492f8fd3';
         $mobile = str_replace("03", "923", $mobile);
         $priority = 0;
-        $message = 'Your request has been successfully submitted, and you have been assigned ticket number: ' . $ticket_id;
+        $message = 'We are pleased to inform you that your ticket has been successfully assigned the number: ' . $ticket_id . '. Our representative will be in touch with you shortly to assist you further.';
 
         $url = "http://mywhatsapp.pk/api/send.php?api_key={$api_key}&mobile={$mobile}&priority={$priority}&message=" . urlencode($message);
 
