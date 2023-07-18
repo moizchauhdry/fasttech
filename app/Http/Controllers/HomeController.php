@@ -163,10 +163,10 @@ class HomeController extends Controller
         }
 
         try {
-            $this->sendMessageToCustomer($request->customField['7'], $ticket->ticket_id);
-            $this->sendMessageToAdmin('923008489759', $ticket->ticket_id);
+            $this->sendMessage($request->customField['7'], $this->customerMessage($ticket));
+            $this->sendMessage("923008489759", $this->adminMessage($ticket)); // 923008489759
         } catch (\Throwable $th) {
-            //throw $th;
+            // throw $th;
         }
 
         return redirect()->back()->with('create_ticket', __('Ticket created successfully') . ' <a href="' . route('home.view', Crypt::encrypt($ticket->ticket_id)) . '"><b>' . __('Your unique ticket link is this.') . '</b></a> ' . ((isset($error_msg)) ? '<br> <span class="text-danger">' . $error_msg . '</span>' : ''));
@@ -244,12 +244,11 @@ class HomeController extends Controller
         return view('knowledgedesc', compact('descriptions'));
     }
 
-    public function sendMessageToCustomer($mobile, $ticket_id)
+    public function sendMessage($mobile, $message)
     {
         $api_key = '923244904912-eb509d03-4c92-4e7d-bc19-ff46492f8fd3';
         $mobile = str_replace("03", "923", $mobile);
         $priority = 0;
-        $message = 'We are pleased to inform you that your ticket has been successfully assigned the number: ' . $ticket_id . '. Our representative will be in touch with you shortly to assist you further.';
 
         $url = "http://mywhatsapp.pk/api/send.php?api_key={$api_key}&mobile={$mobile}&priority={$priority}&message=" . urlencode($message);
 
@@ -285,44 +284,32 @@ class HomeController extends Controller
         return response()->json(['message' => 'Message sent successfully']);
     }
 
-    public function sendMessageToAdmin($mobile, $ticket_id)
+    function customerMessage($ticket)
     {
-        $api_key = '923244904912-eb509d03-4c92-4e7d-bc19-ff46492f8fd3';
-        $mobile = $mobile;
-        $priority = 0;
-        $message = 'New assigned ticket number: ' . $ticket_id;
+        $message = <<<EOT
+        Dear {$ticket->name},
 
-        $url = "http://mywhatsapp.pk/api/send.php?api_key={$api_key}&mobile={$mobile}&priority={$priority}&message=" . urlencode($message);
+        We are pleased to inform you that your ticket has been successfully assigned the number: {$ticket->ticket_id}. 
+        
+        Our representative will be in touch with you shortly to assist you further.Thank you for your patience.
 
-        // Initiate cURL session
-        $curl = curl_init();
+        Best regards,
+        Usman Khan
+        03244904912
+        FastTechnology Customer Support
+        EOT;
 
-        // Set cURL options
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-        ));
+        return $message;
+    }
 
-        // Execute cURL session and get the response
-        $response = curl_exec($curl);
+    function adminMessage($ticket)
+    {
+        $message = <<<EOT
+        To FastTechnology Customer Support,
 
-        // Check for cURL errors
-        if (curl_errno($curl)) {
-            // Handle the error
-            $error = curl_error($curl);
-            curl_close($curl);
-            return response()->json(['error' => $error], 500);
-        }
+        Ticket number: {$ticket->ticket_id}
+        EOT;
 
-        // Close cURL session
-        curl_close($curl);
-
-        // Process the response
-        // You can handle the response as per your requirement
-
-        return response()->json(['message' => 'Message sent successfully']);
+        return $message;
     }
 }
